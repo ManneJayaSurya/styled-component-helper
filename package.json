@@ -3,10 +3,10 @@
   "displayName": "styled-component-helper",
   "description": "Styled Components Extract Intention, more to come.",
   "publisher": "JayasuryaManne",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/ManneJayaSurya/styled-component-helper"
   },
   "icon": "./assets/styled-component-logo.jpg",
   "engines": {
