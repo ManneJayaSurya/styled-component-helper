@@ -3,7 +3,7 @@
   "displayName": "styled-component-helper",
   "description": "Styled Components Extract Intention, more to come.",
   "publisher": "JayasuryaManne",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "repository": {
     "type": "git",
     "url": "https://github.com/ManneJayaSurya/styled-component-helper"
@@ -21,14 +21,24 @@
     "commands": [
       {
         "command": "styled-component-helper",
-        "title": "Extract to Styled Component"
+        "title": "Extract to Styled Component",
+        "enablement": "editorLangId === typescriptreact || editorLangId === javascriptreact"
       } 
+    ],
+    "keybindings": [
+      {
+        "command": "styled-component-helper",
+        "key": "ctrl+shift+e",
+        "mac": "cmd+shift+e",
+        "when": "editorTextFocus"
+      }
     ],
     "menus": {
       "editor/context": [
         {
           "command": "styled-component-helper",
-          "group": "navigation"
+          "group": "navigation",
+          "when": "editorLangId === typescriptreact || editorLangId === javascriptreact"
         }
       ]
     }
