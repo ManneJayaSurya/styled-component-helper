@@ -29,16 +29,40 @@ const disposable = vscode.commands.registerCommand("styled-component-helper", as
 		const isHtmlElement = selectedText.slice(0, 1).toLocaleUpperCase() !== selectedText.slice(0, 1);
 		let defaultName = `Styled${isHtmlElement ? `${selectedText.substring(0, 1).toLocaleUpperCase()}${selectedText.slice(1)}` : `${selectedText.substring(0, 1).toLocaleUpperCase()}${selectedText.slice(1)}`}`;
 
-		const inputOptions: vscode.InputBoxOptions = {
-			title: `Name for Styled Component`,
-			value: `${defaultName}`,
-			validateInput: (value: string): vscode.InputBoxValidationMessage | undefined => {
-				return validateVariableName(value);
-			},
-			ignoreFocusOut: true,
-		};
-
-		const userPreferredName = await vscode.window.showInputBox(inputOptions);
+		let userPreferredName = defaultName;
+		if (wordRange) {
+			editor.selections = [new vscode.Selection(wordRange.start, wordRange.end)];
+			const inputOptions: vscode.InputBoxOptions = {
+				prompt: `Name for Styled Component`,
+				value: `${defaultName}`,
+				valueSelection: [0, defaultName.length],
+				validateInput: (value: string): vscode.InputBoxValidationMessage | undefined => {
+					return validateVariableName(value);
+				},
+				ignoreFocusOut: false,
+			};
+			const input = await vscode.window.showInputBox(inputOptions);
+			if (input) {
+				userPreferredName = input;
+			} else {
+				return;
+			}
+		} else {
+			const inputOptions: vscode.InputBoxOptions = {
+				prompt: `Name for Styled Component`,
+				value: `${defaultName}`,
+				validateInput: (value: string): vscode.InputBoxValidationMessage | undefined => {
+					return validateVariableName(value);
+				},
+				ignoreFocusOut: false,
+			};
+			const input = await vscode.window.showInputBox(inputOptions);
+			if (input) {
+				userPreferredName = input;
+			} else {
+				return;
+			}
+		}
 
 		if (!userPreferredName) {
 			return;
@@ -51,7 +75,23 @@ const disposable = vscode.commands.registerCommand("styled-component-helper", as
 			editBuilder.insert(new vscode.Position(lastLine, 0), "\n" + styledComponent + "\n");
 
 			if (wordRange) {
+				// Replace opening tag
 				editBuilder.replace(wordRange, userPreferredName);
+
+				// Find and replace only the corresponding closing tag (no nesting)
+				const openTagPos = wordRange.end;
+				const docText = editor.document.getText();
+				const afterOpenTagOffset = editor.document.offsetAt(openTagPos);
+				const closingTagPattern = new RegExp(`</${selectedText}([\s>])`, 'g');
+				closingTagPattern.lastIndex = afterOpenTagOffset;
+				const match = closingTagPattern.exec(docText);
+				if (match) {
+					const matchStart = match.index + 2; // skip '</'
+					const matchEnd = matchStart + selectedText.length;
+					const startPos = editor.document.positionAt(matchStart);
+					const endPos = editor.document.positionAt(matchEnd);
+					editBuilder.replace(new vscode.Range(startPos, endPos), userPreferredName);
+				}
 			}
 
 			if (!documentText.includes(styledImport)) {

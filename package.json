@@ -1,9 +1,9 @@
 {
   "name": "styled-component-helper",
   "displayName": "styled-component-helper",
-  "description": "Styled Components Extract Intention, more to come.",
+  "description": "Styled Components Extract Intention.",
   "publisher": "JayasuryaManne",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "repository": {
     "type": "git",
     "url": "https://github.com/ManneJayaSurya/styled-component-helper"
